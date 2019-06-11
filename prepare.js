@@ -19,7 +19,8 @@ for (var sFileName of [
 	"auto_ru_URLS.old6.json",
 	"auto_ru_URLS.old7.json",
 	"auto_ru_URLS.old8.json",
-	"auto_ru_URLS.old9.json"
+	"auto_ru_URLS.old9.json",
+	"auto_ru_URLS.old10.json"
 ]) {
 	if (fs.existsSync(sFileName)) {
 		var oLoadedURLs = JSON.parse(fs.readFileSync(
@@ -40,7 +41,7 @@ for (var sBrand in oURLS) {
 				sSQL += `INSERT INTO auto_ru_models SET brand='${sBrand}', model='${sModel} ${sSubModel}', url='${oURLS[sBrand][sModel][sSubModel]}'\n`;
 			}
 		} else {
-			sSQL += `INSERT INTO auto_ru_models SET brand='${sBrand}', model='${sModel} ${sSubModel}', url='${oURLS[sBrand][sModel]}'\n`;
+			sSQL += `INSERT INTO auto_ru_models SET brand='${sBrand}', model='${sModel}', url='${oURLS[sBrand][sModel]}'\n`;
 		}
 	}
 }
