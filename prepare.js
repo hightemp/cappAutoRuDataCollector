@@ -36,14 +36,20 @@ var sSQL = "";
 for (var sBrand in oURLS) {
 	for (var sModel in oURLS[sBrand]) {
 		if (typeof oURLS[sBrand][sModel] == "object") {
-			for (var sSubModel in oURLS[sBrand][sModel][sSubModel]) {
-				sSQL += `\n`;
+			for (var sSubModel in oURLS[sBrand][sModel]) {
+				sSQL += `INSERT INTO auto_ru_models SET brand='${sBrand}', model='${sModel} ${sSubModel}', url='${oURLS[sBrand][sModel][sSubModel]}'\n`;
 			}
 		} else {
-			sSQL += `\n`;
+			sSQL += `INSERT INTO auto_ru_models SET brand='${sBrand}', model='${sModel} ${sSubModel}', url='${oURLS[sBrand][sModel]}'\n`;
 		}
 	}
 }
+
+fs.writeFileSync(
+	"auto_ru.sql", 
+	sSQL,
+	function() { }
+);
 
 fs.writeFileSync(
 	"auto_ru_URLS.json", 

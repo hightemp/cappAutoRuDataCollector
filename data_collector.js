@@ -60,6 +60,7 @@ async function fnMain()
 	var oPreviusURLS = {};
 
 	for (var sFileName of [
+	/*
 			"auto_ru_URLS.old.json", 
 			"auto_ru_URLS.old2.json", 
 			"auto_ru_URLS.old3.json",
@@ -69,6 +70,7 @@ async function fnMain()
 			"auto_ru_URLS.old7.json",
 			"auto_ru_URLS.old8.json",
 			"auto_ru_URLS.old9.json"
+	*/
 		]) {
 		if (fs.existsSync(sFileName)) {
 			var oLoadedURLs = JSON.parse(fs.readFileSync(
@@ -122,8 +124,8 @@ async function fnMain()
 	var sSkeepBeforeBrand = "Volvo";
 	var sSkeepBeforeModel = "S60";
 	var sSkeepBeforeSubModel = "";
-	var bSkeepBeforeBrand = true;
-	var bSkeepBeforeModel = true;
+	var bSkeepBeforeBrand = false;
+	var bSkeepBeforeModel = false;
 	var bSkeepBeforeSubModel = false;
 	
 	for (var sBrand of aBrandItems) {
