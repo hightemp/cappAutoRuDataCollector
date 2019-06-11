@@ -36,6 +36,9 @@ var sSQL = "";
 
 for (var sBrand in oURLS) {
 	for (var sModel in oURLS[sBrand]) {
+		if (sModel=='') {
+			continue;
+		}
 		if (typeof oURLS[sBrand][sModel] == "object") {
 			for (var sSubModel in oURLS[sBrand][sModel]) {
 				sSQL += `INSERT INTO auto_ru_models SET brand='${sBrand}', model='${sModel} ${sSubModel}', url='${oURLS[sBrand][sModel][sSubModel]}'\n`;
