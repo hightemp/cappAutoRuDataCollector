@@ -1,2 +1,10 @@
 [0611/100621.772:ERROR:process_reader_win.cc(123)] NtOpenThread: {Отказано в доступе} Процесс запросил доступ к объекту, но права на доступ не предоставлены. (0xc0000022)
 [0611/100621.773:ERROR:exception_snapshot_win.cc(98)] thread ID 13464 not found in process
+[0614/133616.631:ERROR:process_reader_win.cc(123)] NtOpenThread: {Отказано в доступе} Процесс запросил доступ к объекту, но права на доступ не предоставлены. (0xc0000022)
+[0614/133616.632:ERROR:exception_snapshot_win.cc(98)] thread ID 12148 not found in process
+[0614/133632.634:ERROR:process_reader_win.cc(123)] NtOpenThread: {Отказано в доступе} Процесс запросил доступ к объекту, но права на доступ не предоставлены. (0xc0000022)
+[0614/133632.635:ERROR:exception_snapshot_win.cc(98)] thread ID 9664 not found in process
+[0614/133743.746:ERROR:process_info.cc(329)] VirtualQueryEx: Отказано в доступе. (0x5)
+[0614/133743.746:ERROR:process_info.cc(550)] ReadMemoryInfo failed
+[0614/133743.746:ERROR:process_memory_win.cc(39)] Failed to initialize ProcessInfo.
+[0614/133743.746:ERROR:scoped_process_suspend.cc(40)] NtResumeProcess: Попытка доступа к процессу, выполняющему процедуру завершения. (0xc000010a)

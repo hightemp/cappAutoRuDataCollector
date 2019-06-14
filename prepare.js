@@ -48,16 +48,19 @@ if (fs.existsSync("auto_ru_URLS.json")) {
 var sSQL = "";
 
 for (var sBrand in oURLS) {
+	sBrand = sBrand.replace(/'/, "\\'");
 	for (var sModel in oURLS[sBrand]) {
 		if (sModel=='') {
 			continue;
 		}
+		sModel = sModel.replace(/'/, "\\'");
 		if (typeof oURLS[sBrand][sModel] == "object") {
 			for (var sSubModel in oURLS[sBrand][sModel]) {
-				sSQL += `INSERT INTO lst_car_models__auto_ru SET brand='${sBrand}', model='${sModel} ${sSubModel}', url='${oURLS[sBrand][sModel][sSubModel]}'\n`;
+				sSubModel = sSubModel.replace(/'/, "\\'");
+				sSQL += `INSERT INTO \`lst_car_models__auto_ru\` SET brand='${sBrand}', model='${sModel} ${sSubModel}', url='${oURLS[sBrand][sModel][sSubModel]}';\n`;
 			}
 		} else {
-			sSQL += `INSERT INTO lst_car_models__auto_ru SET brand='${sBrand}', model='${sModel}', url='${oURLS[sBrand][sModel]}'\n`;
+			sSQL += `INSERT INTO \`lst_car_models__auto_ru\` SET brand='${sBrand}', model='${sModel}', url='${oURLS[sBrand][sModel]}';\n`;
 		}
 	}
 }

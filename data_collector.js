@@ -121,10 +121,10 @@ async function fnMain()
 
 	console.log("Brands ", aBrandItems.length);
 	
-	var sSkeepBeforeBrand = "Volvo";
-	var sSkeepBeforeModel = "S60";
+	var sSkeepBeforeBrand = "BMW";
+	var sSkeepBeforeModel = "";
 	var sSkeepBeforeSubModel = "";
-	var bSkeepBeforeBrand = false;
+	var bSkeepBeforeBrand = true;
 	var bSkeepBeforeModel = false;
 	var bSkeepBeforeSubModel = false;
 	
