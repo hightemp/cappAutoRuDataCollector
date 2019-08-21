@@ -1,20 +1,14 @@
 {
-  "name": "wappseleniumnodejstest",
+  "name": "capp_auto_ru_data_collector",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "data_collector2.js",
   "dependencies": {
-    "chai": "^4.2.0",
-    "chromedriver": "^74.0.0",
-    "geckodriver": "^1.16.2",
-    "selenium-standalone": "^6.16.0",
-    "selenium-webdriver": "^4.0.0-alpha.1"
+    "electron": "^6.0.3"
   },
-  "devDependencies": {
-    "mocha": "^5.2.0"
-  },
+  "devDependencies": {},
   "scripts": {
-    "test": "mocha"
+    "start": "electron data_collector2.js"
   },
   "author": "",
   "license": "ISC"

@@ -7,6 +7,8 @@ const By = by.By;
 
 const fs = require('fs');
 
+const WAIT_TIME = 10000000;
+
 var chrome = require('selenium-webdriver/chrome');
 var path = require('chromedriver').path;
 
@@ -87,13 +89,13 @@ async function fnMain()
 
 	await driver.wait(function () {
 		return until.elementLocated(By.css('.Select__button'));
-	}, 10000).catch((err) => { console.error(err); });
+	}, WAIT_TIME).catch((err) => { console.error(err); });
 
 	await driver.executeScript(function() {
 		window.open = function() {};
 	});
 	
-	await clickWhenClickableElement(By.css('.Select__button'), 10000, 0);
+	await clickWhenClickableElement(By.css('.Select__button'), WAIT_TIME, 0);
 
 	await driver.sleep(300);
 
@@ -142,7 +144,7 @@ async function fnMain()
 		
 		oURLS[sBrand] = {};
 		
-		await clickWhenClickableElement(By.css('.Select__button'), 10000, 0);
+		await clickWhenClickableElement(By.css('.Select__button'), WAIT_TIME, 0);
 		await driver.sleep(300);
 		
 		await driver.executeScript(function(sBrand) {
@@ -158,7 +160,7 @@ async function fnMain()
 		oModelsItems[sBrand] = [];
 		
 		while (iTimes && !oModelsItems[sBrand].length) {
-			await clickWhenClickableElement(By.css('.Select__button'), 10000, 1);		
+			await clickWhenClickableElement(By.css('.Select__button'), WAIT_TIME, 1);		
 			await driver.sleep(300);
 			
 			if (iTimes<3) console.log('EMPTY '+sBrand);
@@ -190,7 +192,7 @@ async function fnMain()
 			await driver.executeScript(function() { document.body.click(); });
 			await driver.sleep(300);
 			
-			await clickWhenClickableElement(By.css('.Select__button'), 10000, 1);
+			await clickWhenClickableElement(By.css('.Select__button'), WAIT_TIME, 1);
 			
 			oModelsItems[sBrand] = await driver.executeScript(function() {
 				var iterator = document.evaluate("(//*[contains(@class,'Select__menu')])[1]//*[contains(@class,'MenuItem')]", document, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
@@ -213,7 +215,7 @@ async function fnMain()
 		var oModelsGroupsItems = [];
 		var oModelsGroupsModelsItems = {};
 		
-		await clickWhenClickableElement(By.css('.Select__button'), 10000, 1);
+		await clickWhenClickableElement(By.css('.Select__button'), WAIT_TIME, 1);
 		await driver.sleep(300);
 		
 		oModelsGroupsItems = await driver.executeScript(function() {
@@ -253,10 +255,10 @@ async function fnMain()
 				continue;
 			}
 
-			await clickWhenClickableElement(By.css('.Select__button'), 10000, 1);
+			await clickWhenClickableElement(By.css('.Select__button'), WAIT_TIME, 1);
 			await driver.sleep(300);
 		
-			await clickWhenClickable(By.xpath("(//*[contains(@class,'Select__menu')])[1]//div[text()=\"Все\"]/following::*[text()=\""+sModel+"\"]/following::*[contains(@class,'Button')]"), 10000);
+			await clickWhenClickable(By.xpath("(//*[contains(@class,'Select__menu')])[1]//div[text()=\"Все\"]/following::*[text()=\""+sModel+"\"]/following::*[contains(@class,'Button')]"), WAIT_TIME);
 			await driver.sleep(300);
 			/*
 			await driver.executeScript(function(sModel) {
@@ -287,10 +289,10 @@ async function fnMain()
 			await driver.executeScript(function() { document.body.click(); });
 			await driver.sleep(300);			
 			
-			await clickWhenClickableElement(By.css('.Select__button'), 10000, 1);
+			await clickWhenClickableElement(By.css('.Select__button'), WAIT_TIME, 1);
 			await driver.sleep(500);
 	
-			await clickWhenClickable(By.xpath("(//*[contains(@class,'Select__menu')])[1]//div[text()=\"Все\"]/following::*[text()=\""+sModel+"\"]/following::*[contains(@class,'Button')]"), 10000);
+			await clickWhenClickable(By.xpath("(//*[contains(@class,'Select__menu')])[1]//div[text()=\"Все\"]/following::*[text()=\""+sModel+"\"]/following::*[contains(@class,'Button')]"), WAIT_TIME);
 			await driver.sleep(300);
 			
 			for (var sSubModel of oModelsGroupsModelsItems[sModel]) {
@@ -324,10 +326,10 @@ async function fnMain()
 					oElement.click();
 				}, sSubModel);
 				*/
-				await clickWhenClickable(By.xpath("(//*[contains(@class,'Select__menu')])[1]//div[text()=\"Все\"]/following::*[text()=\""+sSubModel+"\"]"), 10000);				
+				await clickWhenClickable(By.xpath("(//*[contains(@class,'Select__menu')])[1]//div[text()=\"Все\"]/following::*[text()=\""+sSubModel+"\"]"), WAIT_TIME);				
 				await driver.sleep(500);
 				
-				await clickWhenClickableElement(By.css('.Select__button'), 10000, 1);
+				await clickWhenClickableElement(By.css('.Select__button'), WAIT_TIME, 1);
 				await driver.sleep(500);
 				
 				oURLS[sBrand][sModel][sSubModel] = await driver.executeScript(function() { return window.location.href; });
@@ -345,7 +347,7 @@ async function fnMain()
 				oElement.click();
 			}, sModel);
 			*/
-			await clickWhenClickable(By.xpath("(//*[contains(@class,'Select__menu')])[1]//div[text()=\"Все\"]/following::*[text()=\""+sModel+"\"]"), 10000);			
+			await clickWhenClickable(By.xpath("(//*[contains(@class,'Select__menu')])[1]//div[text()=\"Все\"]/following::*[text()=\""+sModel+"\"]"), WAIT_TIME);			
 			await driver.sleep(300);
 
 			await driver.executeScript(function() { document.body.click(); });
