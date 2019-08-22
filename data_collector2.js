@@ -4,9 +4,39 @@ const fs = require('fs')
 
 class DOMElement
 {
-    constructor(oWindow_i, )
+    constructor(oWindow_i, iID_i)
     {
+        this.oWindow = oWindow_i
+        this.iID = iID_i*1
 
+        console.log(`[!] DOMElement ${this.iID} - created`)
+    }
+
+    async fnClick()
+    {
+        console.log(`[!] DOMElement ${this.iID} - fnClick`)
+
+        var bResult = await this.oWindow.webContents.executeJavaScript(`
+            (function()
+            {
+                if (!window.SAVED_ELEMENTS[${this.iID}]) {
+                    console.log('[E] fnClick - ${this.iID} - empty');
+                    return false;
+                }
+
+                if (window.SAVED_ELEMENTS[${this.iID}].parentElement===null) {
+                    console.log('[E] fnClick - ${this.iID} - parentElement===null');
+                    return false;
+                }
+
+                window.SAVED_ELEMENTS[${this.iID}].click();
+                
+                return true;
+            })()
+        `)
+        if (!bResult) {
+            console.log(`[E] DOMElement ${this.iID} - fnClick - Element not found`)
+        }
     }
 }
 
@@ -23,6 +53,7 @@ class AutoRuParser
 
         try {
             this.fnLoadURLs()
+
             this.fnStart()
         } catch(oException) {
             console.log(`[E] ${oException.message}`)
@@ -41,7 +72,7 @@ class AutoRuParser
 
     fnSaveURLs(sFileName = this.sSavedURLsFileName)
     {
-        fs.writeFile(
+        fs.writeFileSync(
             sFileName, 
             JSON.stringify(this.oURLs)
         )
@@ -77,7 +108,7 @@ class AutoRuParser
 
             if (iResult!=-1) {
                 console.log(`[E] fnGetElementCSS '${sCSS}' ${iWaitTime}s - Create element with id ${iResult}`);
-                return new DOMElement();    
+                return new DOMElement(this.oWindow, iResult);    
             }
         }
 
@@ -119,7 +150,11 @@ class AutoRuParser
             new Error("10001 - Button not found");
         }
 
-        console.log('bSelectButtonExists > ', bSelectButtonExists)
+        var oElement;
+
+        if (oElement = await this.fnGetElementCSS(".Select__button")) {
+            await oElement.fnClick();
+        }
     }
 
     async fnLoadURL(sURL)
