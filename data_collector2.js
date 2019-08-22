@@ -12,31 +12,62 @@ class DOMElement
         console.log(`[!] DOMElement ${this.iID} - created`)
     }
 
-    async fnClick()
+    async fnGetClientPosition()
     {
-        console.log(`[!] DOMElement ${this.iID} - fnClick`)
+        console.log(`[!] DOMElement ${this.iID} - fnGetClientPosition`)
 
-        var bResult = await this.oWindow.webContents.executeJavaScript(`
+        var sResult = await this.oWindow.webContents.executeJavaScript(`
             (function()
             {
                 if (!window.SAVED_ELEMENTS[${this.iID}]) {
-                    console.log('[E] fnClick - ${this.iID} - empty');
+                    console.log('[E] fnGetClientPosition - ${this.iID} - empty');
                     return false;
                 }
 
                 if (window.SAVED_ELEMENTS[${this.iID}].parentElement===null) {
-                    console.log('[E] fnClick - ${this.iID} - parentElement===null');
+                    console.log('[E] fnGetClientPosition - ${this.iID} - parentElement===null');
                     return false;
                 }
 
-                window.SAVED_ELEMENTS[${this.iID}].click();
-                
-                return true;
+                return JSON.stringify(window.SAVED_ELEMENTS[${this.iID}].getBoundingClientRect());
             })()
         `)
-        if (!bResult) {
-            console.log(`[E] DOMElement ${this.iID} - fnClick - Element not found`)
+        if (!sResult) {
+            console.log(`[E] DOMElement ${this.iID} - fnGetClientPosition - Element not found`)
         }
+
+        var oResult = JSON.parse(sResult);
+
+        console.log(`[+] DOMElement ${this.iID} - fnGetClientPosition ${sResult}`)
+
+        return oResult;
+    }
+
+    async fnClick(iClickCount = 1)
+    {
+        console.log(`[!] DOMElement ${this.iID} - fnClick`)
+
+        var oBoundingClientRect = await this.fnGetClientPosition()
+
+        var oEvent = { 
+            type: 'mouseDown', 
+            x: (oBoundingClientRect.right + oBoundingClientRect.left)/2,
+            y: (oBoundingClientRect.bottom + oBoundingClientRect.top)/2,
+            button:'left', 
+            clickCount: 1
+        }
+        await this.oWindow.webContents.sendInputEvent(oEvent)
+        console.log(`[!] DOMElement ${this.iID} - fnClick - sendInputEvent `+JSON.stringify(oEvent))
+
+        var oEvent = { 
+            type: 'mouseUp', 
+            x: (oBoundingClientRect.right + oBoundingClientRect.left)/2,
+            y: (oBoundingClientRect.bottom + oBoundingClientRect.top)/2,
+            button:'left', 
+            clickCount: 1
+        }
+        await this.oWindow.webContents.sendInputEvent(oEvent)
+        console.log(`[!] DOMElement ${this.iID} - fnClick - sendInputEvent `+JSON.stringify(oEvent))
     }
 }
 
@@ -107,7 +138,7 @@ class AutoRuParser
             `)
 
             if (iResult!=-1) {
-                console.log(`[E] fnGetElementCSS '${sCSS}' ${iWaitTime}s - Create element with id ${iResult}`);
+                console.log(`[+] fnGetElementCSS '${sCSS}' ${iWaitTime}s - Create element with id ${iResult}`);
                 return new DOMElement(this.oWindow, iResult);    
             }
         }
@@ -132,7 +163,7 @@ class AutoRuParser
             var iResult = await this.oWindow.webContents.executeJavaScript(`document.querySelectorAll('${sCSS}').length`)
 
             if (iResult) {
-                console.log(`[E] fnWaitElementCSS '${sCSS}' ${iWaitTime}s - Found ${iResult} elements`);
+                console.log(`[+] fnWaitElementCSS '${sCSS}' ${iWaitTime}s - Found ${iResult} elements`);
                 return true;    
             }
         }
