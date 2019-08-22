@@ -43,31 +43,27 @@ class DOMElement
         return oResult;
     }
 
+    async fnSendInputClickEvent(oEvent_i = {})
+    {
+        var oEvent = {type: 'mouseDown', button:'left', ...oEvent_i}
+        await this.oWindow.webContents.sendInputEvent(oEvent)
+        console.log(`[!] DOMElement ${this.iID} - fnClick - sendInputEvent `+JSON.stringify(oEvent))
+
+        var oEvent = {type: 'mouseUp', button:'left', ...oEvent_i}
+        await this.oWindow.webContents.sendInputEvent(oEvent)
+        console.log(`[!] DOMElement ${this.iID} - fnClick - sendInputEvent `+JSON.stringify(oEvent))
+    }
+
     async fnClick(iClickCount = 1)
     {
         console.log(`[!] DOMElement ${this.iID} - fnClick`)
 
         var oBoundingClientRect = await this.fnGetClientPosition()
 
-        var oEvent = { 
-            type: 'mouseDown', 
-            x: (oBoundingClientRect.right + oBoundingClientRect.left)/2,
-            y: (oBoundingClientRect.bottom + oBoundingClientRect.top)/2,
-            button:'left', 
-            clickCount: 1
-        }
-        await this.oWindow.webContents.sendInputEvent(oEvent)
-        console.log(`[!] DOMElement ${this.iID} - fnClick - sendInputEvent `+JSON.stringify(oEvent))
+        var fX = (oBoundingClientRect.right + oBoundingClientRect.left)/2;
+        var fY = (oBoundingClientRect.bottom + oBoundingClientRect.top)/2;
 
-        var oEvent = { 
-            type: 'mouseUp', 
-            x: (oBoundingClientRect.right + oBoundingClientRect.left)/2,
-            y: (oBoundingClientRect.bottom + oBoundingClientRect.top)/2,
-            button:'left', 
-            clickCount: 1
-        }
-        await this.oWindow.webContents.sendInputEvent(oEvent)
-        console.log(`[!] DOMElement ${this.iID} - fnClick - sendInputEvent `+JSON.stringify(oEvent))
+        await this.fnSendInputClickEvent({ x:fX, y:fY })
     }
 }
 
