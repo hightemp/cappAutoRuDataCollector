@@ -61,12 +61,19 @@ class DOMElement
 
         var oBoundingClientRect = await this.fnGetClientPosition()
 
+        if (!oBoundingClientRect) {
+            console.log(`[E] DOMElement ${this.iID} - fnClick - Error. Can't click`)
+            return false
+        }
+
         var fX = (oBoundingClientRect.right + oBoundingClientRect.left)/2;
         var fY = (oBoundingClientRect.bottom + oBoundingClientRect.top)/2;
 
         for (let iIndex = 0; iIndex < iClickCount; iIndex++) {
             await this.fnSendInputClickEvent({ x:fX, y:fY })
         }
+
+        return true
     }
 
     async fnJavascriptClick()
