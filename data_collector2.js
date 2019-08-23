@@ -34,6 +34,7 @@ class DOMElement
         `)
         if (!sResult) {
             console.log(`[E] DOMElement ${this.iID} - fnGetClientPosition - Element not found`)
+            return;
         }
 
         var oResult = JSON.parse(sResult);
@@ -66,6 +67,30 @@ class DOMElement
         for (let iIndex = 0; iIndex < iClickCount; iIndex++) {
             await this.fnSendInputClickEvent({ x:fX, y:fY })
         }
+    }
+
+    async fnJavascriptClick()
+    {
+        console.log(`[!] DOMElement ${this.iID} - fnJavascriptClick`)
+
+        var sResult = await this.oWindow.webContents.executeJavaScript(`
+            (function()
+            {
+                if (!window.SAVED_ELEMENTS[${this.iID}]) {
+                    console.log('[E] fnJavascriptClick - ${this.iID} - empty');
+                    return false;
+                }
+
+                if (window.SAVED_ELEMENTS[${this.iID}].parentElement===null) {
+                    console.log('[E] fnJavascriptClick - ${this.iID} - parentElement===null');
+                    return false;
+                }
+
+                window.SAVED_ELEMENTS[${this.iID}].click();
+
+                return true;
+            })()
+        `)
     }
 }
 
@@ -285,38 +310,34 @@ class AutoRuParser
         var oBodyElement = await this.fnGetElementCSS("body")
 
         // Открытие списка с марками(брендами)
-        var oElement = await this.fnGetElementCSS(".Select__button")
+        var oBrandsSelectButtonElement = await this.fnGetElementCSS(".Select__button")
 
-        if (!oElement) {
+        if (!oBrandsSelectButtonElement) {
             console.log(`[E] Parsing brands list - Element not found '.Select__button'`)
             return;
         }
 
-        await oElement.fnClick()
-
-        await oBodyElement.fnClick()
+        await oBrandsSelectButtonElement.fnClick()
 
         // Получение списка с марками(брендами)
         var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])//*[contains(@class,\"Menu__group\")][descendant::*[text()=\"Все\"]]/*[contains(@class,\"MenuItem\")]"
         this.aBrands = await this.fnGetElementsAttributeXPath(sBrandMenuItemXPath, 'innerText')
 
         for (var sBrand of this.aBrands) {
-            oURLS[sBrand] = {}
+            console.log(`[!] Brand - '${sBrand}'`)
 
-            var oElement = await this.fnGetElementCSS(".Select__button")
+            this.oURLs[sBrand] = {}
 
-            if (!oElement) {
-                console.log(`[E] Iterating brands list - '${sBrand}' - Element not found '.Select__button'`)
-                return;
-            }
-    
-            await oElement.fnClick()
+            await oBodyElement.fnClick()
+
+            await oBrandsSelectButtonElement.fnClick()
     
             var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])[1]//div[text()=\"Все\"]/following::*[text()=\""+sBrand+"\"]"
-            
-        }
 
-        console.dir(aBrands, {depth: null, colors: true, maxArrayLength: null})
+            var oMenuItem = await this.fnGetElementXPath(sBrandMenuItemXPath)
+
+            oMenuItem.fnJavascriptClick()
+        }
     }
 
     fnConsoleDir(aValue)
