@@ -139,7 +139,7 @@ class AutoRuParser
     {
         this.oWindow = oWindow_i
         this.iWaitTime = 1000
-        this.sSavedURLsFileName = "auto_ru_URLS.old.json"
+        this.sSavedURLsFileName = "auto_ru_URLs.json"
         this.aBrands = []
         this.oModels = {}
         this.oURLs = {}
@@ -148,6 +148,8 @@ class AutoRuParser
             this.fnLoadURLs()
 
             this.fnStart()
+
+            this.fnSaveURLs()
         } catch(oException) {
             console.log(`[E] ${oException.message}`)
         }
@@ -155,19 +157,21 @@ class AutoRuParser
 
     fnLoadURLs(sFileName = this.sSavedURLsFileName)
     {
+        console.log(`[!] URLs loaded from '${sFileName}'`);
         if (fs.existsSync(sFileName)) {
-            JSON.parse(fs.readFileSync(
+            this.oURLs = JSON.parse(fs.readFileSync(
 				sFileName,
 				"utf8"
-			))
+            ))            
         }
     }
 
     fnSaveURLs(sFileName = this.sSavedURLsFileName)
     {
+        console.log(`[!] URLs saved to '${sFileName}'`);
         fs.writeFileSync(
             sFileName, 
-            JSON.stringify(this.oURLs)
+            JSON.stringify(this.oURLs, null, 4)
         )
     }
 
@@ -416,7 +420,8 @@ class AutoRuParser
             await oBrandsSelectButtonElement.fnClick()
             await this.fnSleep(500)
     
-            var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])[1]//div[text()=\"Все\"]/following::*[text()=\""+sBrand+"\"]"
+            //var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])[1]//div[text()=\"Все\"]/following::*[text()=\""+sBrand+"\"]"
+            var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])[1]//*[text()=\""+sBrand+"\"]"
 
             var oBrandMenuItem = await this.fnGetElementXPath(sBrandMenuItemXPath)
 
@@ -443,15 +448,65 @@ class AutoRuParser
                 await this.fnSleep(500)
             }
 
-            var oModelsGroupsItemsXPath = "(//*[contains(@class,\"Select__menu\")])[1]//*[contains(@class,\"Menu__group\")][descendant::*[text()=\"Все\"]]//*[contains(@class,\"MenuItemGroup__root\")]/*[contains(@class,\"MenuItem\")][string-length(text()) > 0]"
-            var aModelsGroups = await this.fnGetElementsAttributeXPath(oModelsGroupsItemsXPath, 'innerText', 5)
+            //var sModelsGroupsItemsXPath = "(//*[contains(@class,\"Select__menu\")])[1]//*[contains(@class,\"Menu__group\")][descendant::*[text()=\"Все\"]]//*[contains(@class,\"MenuItemGroup__root\")]/*[contains(@class,\"MenuItem\")][string-length(text()) > 0]"
+            var sModelsGroupsItemsXPath = "(//*[contains(@class,\"Select__menu\")])[1]//*[contains(@class,\"Menu__group\")]//*[contains(@class,\"MenuItemGroup__root\")]/*[contains(@class,\"MenuItem\")][string-length(text()) > 0]"
+            var aModelsGroups = await this.fnGetElementsAttributeXPath(sModelsGroupsItemsXPath, 'innerText', 5)
 
             if (!aModelsGroups) {
                 console.log(`[!] models groups - not found`)
             } else {
                 aModelsGroups = aModelsGroups.filter((v) => v != 'Любая')
+                aModelsGroups = aModelsGroups.filter((v, p) => aModelsGroups.indexOf(v) == p )
+    
+                for (var sModel of aModelsGroups) {
+                    //var sModelsGroupsModelItemXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[text()="'+sModel+'"]/following::*[contains(@class,"Button")]'
+                    var sModelsGroupsModelButtonXPath = '(//*[contains(@class,"Select__menu")])[1]//*[text()="'+sModel+'"]/*[contains(@class,"Button")]' //following::*[contains(@class,"Button")]'
+                    var oModelsGroupsModelButton = await this.fnGetElementXPath(sModelsGroupsModelButtonXPath)
 
+                    await oModelsGroupsModelButton.fnJavascriptClick()
+                    await this.fnSleep(500)
 
+                    //var sSubmodelsListXPath = '(//*[contains(@class,"Select__menu")])[1]//*[contains(@class,"Menu__group")][descendant::*[text()="Все"]]//*[contains(@class,"MenuItemGroup__children")]/*[contains(@class,"MenuItem")]'
+                    var sSubmodelsListXPath = '(//*[contains(@class,"Select__menu")])[1]//*[contains(@class,"Menu__group")]//*[contains(@class,"MenuItemGroup__children")]/*[contains(@class,"MenuItem")]'
+                    var aSubmodels = await this.fnGetElementsAttributeXPath(sSubmodelsListXPath, 'innerText')
+
+                    if (!aSubmodels) {
+                        console.log(`[!] models groups - ${sModel} - submodels not found`)
+                    } else {
+                        for (var sSubModel of aSubmodels) {
+                            await oBodyElement.fnClick()
+                            await this.fnSleep(500)
+    
+                            var oModelsSelectButtonElement = await this.fnGetElementCSS(".Select__button", 1)
+
+                            if (!oModelsSelectButtonElement) {
+                                console.log(`[E] models list - Element not found '.Select__button'`)
+                                return;
+                            }
+
+                            await oModelsSelectButtonElement.fnSetStyle("border: 1px solid orange")
+    
+                            if (!await this.fnWaitElementCSS(".Select__menu", -1, 1)) {
+                                await oModelsSelectButtonElement.fnClick()
+                                await this.fnSleep(500)
+                            }
+
+                            var sModelsGroupsModelButtonXPath = '(//*[contains(@class,"Select__menu")])[1]//*[text()="'+sModel+'"]/*[contains(@class,"Button")]' //following::*[contains(@class,"Button")]'
+                            var oModelsGroupsModelButton = await this.fnGetElementXPath(sModelsGroupsModelButtonXPath)
+        
+                            await oModelsGroupsModelButton.fnJavascriptClick()
+                            await this.fnSleep(500)
+    
+                            //var sSubmodelXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[text()="'+sSubModel+'"]'
+                            var sSubmodelXPath = '(//*[contains(@class,"Select__menu")])[1]//*[text()="'+sSubModel+'"]'
+                            var oSubModelItem = await this.fnGetElementXPath(sSubmodelXPath)
+    
+                            await oSubModelItem.fnJavascriptClick()
+    
+                            this.oURLs[sBrand][sModel][sSubModel] = await this.fnGetLocation()
+                        }
+                    }
+                }
             }
 
             this.fnConsoleDir(aModelsGroups)
@@ -475,55 +530,60 @@ class AutoRuParser
                 await this.fnSleep(500)
             }
 
-            var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[contains(@class,"MenuItem")]'
-            var aModels = await this.fnGetElementsAttributeXPath(sModelMenuItemXPath, 'innerText')
+            //var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[contains(@class,"MenuItem")]'
+            var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//*[contains(@class,"MenuItem")][not(contains(@class,"MenuItemGroup__button"))][string-length(text()) > 0]'
+            var aModels = await this.fnGetElementsAttributeXPath(sModelMenuItemXPath, 'innerText', 5)
 
-            aModels = aModels.filter((v) => v != 'Любая')
+            if (aModels) {
+                aModels = aModels.filter((v) => v != 'Любая')
+                aModels = aModels.filter((v, p) => aModels.indexOf(v) == p )
 
-            this.fnConsoleDir(aModels)
+                this.fnConsoleDir(aModels)
 
-            for (var sModel of aModels) {
-                console.log(`[!] Model - '${sModel}'`)
+                for (var sModel of aModels) {
+                    console.log(`[!] Model - '${sModel}'`)
 
-                await oBodyElement.fnClick()
-                await this.fnSleep(500)
-
-                oModelsSelectButtonElement = await this.fnGetElementCSS(".Select__button", 1)
-
-                if (!oModelsSelectButtonElement) {
-                    console.log(`[E] models list - Element not found '.Select__button'`)
-                    return;
-                }
-
-                await oModelsSelectButtonElement.fnSetStyle("border: 1px solid red")
-
-                if (!await this.fnWaitElementCSS(".Select__menu", -1, 1)) {
-                    await oModelsSelectButtonElement.fnClick()
+                    await oBodyElement.fnClick()
                     await this.fnSleep(500)
+
+                    oModelsSelectButtonElement = await this.fnGetElementCSS(".Select__button", 1)
+
+                    if (!oModelsSelectButtonElement) {
+                        console.log(`[E] models list - Element not found '.Select__button'`)
+                        return;
+                    }
+
+                    await oModelsSelectButtonElement.fnSetStyle("border: 1px solid red")
+
+                    if (!await this.fnWaitElementCSS(".Select__menu", -1, 1)) {
+                        await oModelsSelectButtonElement.fnClick()
+                        await this.fnSleep(500)
+                    }
+
+                    if (!await this.fnWaitElementCSS(".Select__menu", -1, 1)) {
+                        console.log(`[E] models list - Element not found '.Select__menu'`)
+                        return;
+                    }
+
+                    //var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[text()="'+sModel+'"]' // [.//*[not(contains(@class,"MenuItemGroup__button"))]]
+                    var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//*[text()="'+sModel+'"]' // [.//*[not(contains(@class,"MenuItemGroup__button"))]]
+                    var oModelMenuItem = await this.fnGetElementXPath(sModelMenuItemXPath, 0, 1)
+
+                    if (!oModelMenuItem) {
+                        console.log(`[E] brands list - menu item - Element not found '${sModelMenuItemXPath}'`)
+                        return;
+                    }
+
+                    await oModelMenuItem.fnJavascriptClick()
+
+                    this.oURLs[sBrand][sModel] = await this.fnGetLocation()
                 }
-
-                if (!await this.fnWaitElementCSS(".Select__menu", -1, 1)) {
-                    console.log(`[E] models list - Element not found '.Select__menu'`)
-                    return;
-                }
-
-                var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[text()="'+sModel+'"]' // [.//*[not(contains(@class,"MenuItemGroup__button"))]]
-                var oModelMenuItem = await this.fnGetElementXPath(sModelMenuItemXPath, 0, 1)
-
-                if (!oModelMenuItem) {
-                    console.log(`[E] brands list - menu item - Element not found '${sModelMenuItemXPath}'`)
-                    return;
-                }
-
-                await oModelMenuItem.fnJavascriptClick()
-
-                this.oURLs[sBrand][sModel] = await this.fnGetLocation()
             }
 
-            this.fnConsoleDir(this.oURLs)
-
-            return
+            this.fnSaveURLs()
         }
+
+        this.fnConsoleDir(this.oURLs)
     }
 
     fnConsoleDir(aValue)
