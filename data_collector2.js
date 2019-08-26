@@ -12,6 +12,38 @@ class DOMElement
         console.log(`[!] DOMElement ${this.iID} - created`)
     }
 
+    async fnSetStyle(sCSS)
+    {
+        console.log(`[!] DOMElement ${this.iID} - fnSetStyle`)
+
+        var bResult = await this.oWindow.webContents.executeJavaScript(`
+            (function()
+            {
+                if (!window.SAVED_ELEMENTS[${this.iID}]) {
+                    console.log('[E] fnGetClientPosition - ${this.iID} - empty');
+                    return false;
+                }
+
+                if (window.SAVED_ELEMENTS[${this.iID}].parentElement===null) {
+                    console.log('[E] fnGetClientPosition - ${this.iID} - parentElement===null');
+                    return false;
+                }
+
+                window.SAVED_ELEMENTS[${this.iID}].setAttribute("style", "${sCSS}");
+
+                return true;
+            })()
+        `)
+        if (!bResult) {
+            console.log(`[E] DOMElement ${this.iID} - fnSetStyle - Element not found`)
+            return;
+        }
+
+        console.log(`[+] DOMElement ${this.iID} - fnSetStyle "${sCSS}" ${bResult}`)
+
+        return bResult;
+    }
+
     async fnGetClientPosition()
     {
         console.log(`[!] DOMElement ${this.iID} - fnGetClientPosition`)
@@ -156,6 +188,7 @@ class AutoRuParser
             var aResult = await this.oWindow.webContents.executeJavaScript(`
                 (function() { 
                     var oXPathResult = document.evaluate('${sXPath}', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                    console.log('fnGetElementsAttributeXPath', '${sXPath}', oXPathResult);
                     if (oXPathResult.snapshotLength>0) {
                         var aResult = [];
 
@@ -176,6 +209,7 @@ class AutoRuParser
         }
 
         console.log(`[E] fnGetElementsAttributeXPath '${sXPath}' ${iWaitTime}s - Element not found`);
+        return false;
     }
 
     async fnGetElementXPath(sXPath, iElementIndex=0, iWaitTime = this.iWaitTime)
@@ -195,6 +229,7 @@ class AutoRuParser
             var iResult = await this.oWindow.webContents.executeJavaScript(`
                 (function() { 
                     var oXPathResult = document.evaluate('${sXPath}', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                    console.log('fnGetElementXPath', '${sXPath}', oXPathResult);
                     if (oXPathResult.snapshotLength>0) {
                         if (!window.SAVED_ELEMENTS) {
                             window.SAVED_ELEMENTS = [];
@@ -213,6 +248,7 @@ class AutoRuParser
         }
 
         console.log(`[E] fnGetElementXPath '${sXPath}' ${iWaitTime}s - Element not found`);
+        return false;
     }
 
     async fnWaitElementXPath(sXPath, iWaitTime = this.iWaitTime)
@@ -240,11 +276,12 @@ class AutoRuParser
         }
 
         console.log(`[E] fnWaitElementXPath '${sXPath}' ${iWaitTime}s - Element not found`);
+        return false;
     }
 
     async fnGetElementCSS(sCSS, iElementIndex=0, iWaitTime = this.iWaitTime)
     {
-        console.log(`[!] fnGetElementCSS '${sCSS}' ${iWaitTime}s`);
+        console.log(`[!] fnGetElementCSS '${sCSS}' ${iElementIndex} ${iWaitTime}s`);
 
         var iStartTime = Math.round(new Date().getTime()/1000);
 
@@ -252,16 +289,20 @@ class AutoRuParser
             var iEndTime = Math.round(new Date().getTime()/1000);
             
             if (iEndTime-iStartTime>=iWaitTime) {
-                console.log(`[E] fnGetElementCSS '${sCSS}' ${iWaitTime}s - Timeout`);
+                console.log(`[E] fnGetElementCSS '${sCSS}' ${iElementIndex} ${iWaitTime}s - Timeout`);
                 break;
             }
 
             var iResult = await this.oWindow.webContents.executeJavaScript(`
                 (function() { 
                     var oNodeList = document.querySelectorAll('${sCSS}');
+                    console.log('fnGetElementCSS', '${sCSS}', oNodeList);
                     if (oNodeList.length>0) {
                         if (!window.SAVED_ELEMENTS) {
                             window.SAVED_ELEMENTS = [];
+                        }
+                        if (!oNodeList[${iElementIndex}]) {
+                            return -1;
                         }
                         window.SAVED_ELEMENTS.push(oNodeList[${iElementIndex}]);
                         return window.SAVED_ELEMENTS.length-1;
@@ -271,15 +312,16 @@ class AutoRuParser
             `)
 
             if (iResult!=-1) {
-                console.log(`[+] fnGetElementCSS '${sCSS}' ${iWaitTime}s - Create element with id ${iResult}`);
+                console.log(`[+] fnGetElementCSS '${sCSS}' ${iElementIndex} ${iWaitTime}s - Create element with id ${iResult}`);
                 return new DOMElement(this.oWindow, iResult);    
             }
         }
 
-        console.log(`[E] fnGetElementCSS '${sCSS}' ${iWaitTime}s - Element not found`);
+        console.log(`[E] fnGetElementCSS '${sCSS}' ${iElementIndex} ${iWaitTime}s - Element not found`);
+        return false;
     }
 
-    async fnWaitElementCSS(sCSS, iWaitTime = this.iWaitTime)
+    async fnWaitElementCSS(sCSS, iElementIndex=-1, iWaitTime = this.iWaitTime)
     {
         console.log(`[!] fnWaitElementCSS '${sCSS}' ${iWaitTime}s`);
 
@@ -293,15 +335,40 @@ class AutoRuParser
                 break;
             }
 
-            var iResult = await this.oWindow.webContents.executeJavaScript(`document.querySelectorAll('${sCSS}').length`)
+            if (iElementIndex==-1) {
+                var iResult = await this.oWindow.webContents.executeJavaScript(`document.querySelectorAll('${sCSS}').length`)
 
-            if (iResult) {
-                console.log(`[+] fnWaitElementCSS '${sCSS}' ${iWaitTime}s - Found ${iResult} elements`);
-                return true;    
+                if (iResult) {
+                    console.log(`[+] fnWaitElementCSS '${sCSS}' ${iWaitTime}s - Found ${iResult} elements`);
+                    return true;    
+                }
+            } else {
+                var bResult = await this.oWindow.webContents.executeJavaScript(`!!document.querySelectorAll('${sCSS}')[${iElementIndex}]`)
+
+                if (bResult) {
+                    console.log(`[+] fnWaitElementCSS '${sCSS}' ${iWaitTime}s - Found 1 element`);
+                    return true;    
+                }
             }
         }
 
         console.log(`[E] fnWaitElementCSS '${sCSS}' ${iWaitTime}s - Element not found`);
+        return false;
+    }
+
+    async fnGetLocation()
+    {
+        var sResult = await this.oWindow.webContents.executeJavaScript(`window.location.toString()`)
+        
+        return sResult
+    }
+
+    fnSleep(ms)
+    {
+        console.log(`[!] *** sleep ${ms}ms ***`)
+        return new Promise(resolve=> {
+            setTimeout(resolve, ms)
+        })
     }
 
     async fnStart()
@@ -325,6 +392,7 @@ class AutoRuParser
         }
 
         await oBrandsSelectButtonElement.fnClick()
+        await this.fnSleep(500)
 
         // Получение списка с марками(брендами)
         var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])//*[contains(@class,\"Menu__group\")][descendant::*[text()=\"Все\"]]/*[contains(@class,\"MenuItem\")]"
@@ -336,14 +404,125 @@ class AutoRuParser
             this.oURLs[sBrand] = {}
 
             await oBodyElement.fnClick()
+            await this.fnSleep(500)
+
+            var oBrandsSelectButtonElement = await this.fnGetElementCSS(".Select__button")
+
+            if (!oBrandsSelectButtonElement) {
+                console.log(`[E] brands list - Element not found '.Select__button'`)
+                return;
+            }
 
             await oBrandsSelectButtonElement.fnClick()
+            await this.fnSleep(500)
     
             var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])[1]//div[text()=\"Все\"]/following::*[text()=\""+sBrand+"\"]"
 
-            var oMenuItem = await this.fnGetElementXPath(sBrandMenuItemXPath)
+            var oBrandMenuItem = await this.fnGetElementXPath(sBrandMenuItemXPath)
 
-            oMenuItem.fnJavascriptClick()
+            if (!oBrandMenuItem) {
+                console.log(`[E] brands list - menu item - Element not found '${sBrandMenuItemXPath}'`)
+                return;
+            }
+
+            oBrandMenuItem.fnJavascriptClick()
+
+            // Получение групп моделей
+            console.log('[!] ---- Getting models groups ----')
+            var oModelsSelectButtonElement = await this.fnGetElementCSS(".Select__button", 1)
+
+            if (!oModelsSelectButtonElement) {
+                console.log(`[E] models list - Element not found '.Select__button'`)
+                return;
+            }
+
+            await oModelsSelectButtonElement.fnSetStyle("border: 1px solid green")
+
+            if (!await this.fnWaitElementCSS(".Select__menu", -1, 1)) {
+                await oModelsSelectButtonElement.fnClick()
+                await this.fnSleep(500)
+            }
+
+            var oModelsGroupsItemsXPath = "(//*[contains(@class,\"Select__menu\")])[1]//*[contains(@class,\"Menu__group\")][descendant::*[text()=\"Все\"]]//*[contains(@class,\"MenuItemGroup__root\")]/*[contains(@class,\"MenuItem\")][string-length(text()) > 0]"
+            var aModelsGroups = await this.fnGetElementsAttributeXPath(oModelsGroupsItemsXPath, 'innerText', 5)
+
+            if (!aModelsGroups) {
+                console.log(`[!] models groups - not found`)
+            } else {
+                aModelsGroups = aModelsGroups.filter((v) => v != 'Любая')
+
+
+            }
+
+            this.fnConsoleDir(aModelsGroups)
+
+            await oBodyElement.fnClick()
+            await this.fnSleep(500)
+
+            // Получение моделей
+            console.log('[!] ---- Getting models ----')
+            var oModelsSelectButtonElement = await this.fnGetElementCSS(".Select__button", 1)
+
+            if (!oModelsSelectButtonElement) {
+                console.log(`[E] models list - Element not found '.Select__button'`)
+                return;
+            }
+
+            await oModelsSelectButtonElement.fnSetStyle("border: 1px solid black")
+
+            if (!await this.fnWaitElementCSS(".Select__menu", -1, 1)) {
+                await oModelsSelectButtonElement.fnClick()
+                await this.fnSleep(500)
+            }
+
+            var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[contains(@class,"MenuItem")]'
+            var aModels = await this.fnGetElementsAttributeXPath(sModelMenuItemXPath, 'innerText')
+
+            aModels = aModels.filter((v) => v != 'Любая')
+
+            this.fnConsoleDir(aModels)
+
+            for (var sModel of aModels) {
+                console.log(`[!] Model - '${sModel}'`)
+
+                await oBodyElement.fnClick()
+                await this.fnSleep(500)
+
+                oModelsSelectButtonElement = await this.fnGetElementCSS(".Select__button", 1)
+
+                if (!oModelsSelectButtonElement) {
+                    console.log(`[E] models list - Element not found '.Select__button'`)
+                    return;
+                }
+
+                await oModelsSelectButtonElement.fnSetStyle("border: 1px solid red")
+
+                if (!await this.fnWaitElementCSS(".Select__menu", -1, 1)) {
+                    await oModelsSelectButtonElement.fnClick()
+                    await this.fnSleep(500)
+                }
+
+                if (!await this.fnWaitElementCSS(".Select__menu", -1, 1)) {
+                    console.log(`[E] models list - Element not found '.Select__menu'`)
+                    return;
+                }
+
+                var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[text()="'+sModel+'"]' // [.//*[not(contains(@class,"MenuItemGroup__button"))]]
+                var oModelMenuItem = await this.fnGetElementXPath(sModelMenuItemXPath, 0, 1)
+
+                if (!oModelMenuItem) {
+                    console.log(`[E] brands list - menu item - Element not found '${sModelMenuItemXPath}'`)
+                    return;
+                }
+
+                await oModelMenuItem.fnJavascriptClick()
+
+                this.oURLs[sBrand][sModel] = await this.fnGetLocation()
+            }
+
+            this.fnConsoleDir(this.oURLs)
+
+            return
         }
     }
 
