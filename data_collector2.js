@@ -12,6 +12,40 @@ class DOMElement
         console.log(`[!] DOMElement ${this.iID} - created`)
     }
 
+    async fnGetAttribute(sAttributeName, bAsArray=false)
+    {
+        console.log(`[!] DOMElement ${this.iID} - fnGetAttribute`)
+
+        var sResult = await this.oWindow.webContents.executeJavaScript(`
+            (function()
+            {
+                if (!window.SAVED_ELEMENTS[${this.iID}]) {
+                    console.log('[E] fnGetAttribute - ${this.iID} - empty');
+                    return false;
+                }
+
+                if (window.SAVED_ELEMENTS[${this.iID}].parentElement===null) {
+                    console.log('[E] fnGetAttribute - ${this.iID} - parentElement===null');
+                    return false;
+                }
+
+                if (${bAsArray}) {
+                    return window.SAVED_ELEMENTS[${this.iID}]['${sAttributeName}'];
+                } else {
+                    return window.SAVED_ELEMENTS[${this.iID}].getAttribute('${sAttributeName}');
+                }
+            })()
+        `)
+        if (!sResult) {
+            console.log(`[E] DOMElement ${this.iID} - fnGetAttribute - Element not found`)
+            return;
+        }
+
+        console.log(`[+] DOMElement ${this.iID} - fnGetAttribute "${sAttributeName}" ${sResult}`)
+
+        return sResult;        
+    }
+
     async fnSetStyle(sCSS)
     {
         console.log(`[!] DOMElement ${this.iID} - fnSetStyle`)
@@ -20,12 +54,12 @@ class DOMElement
             (function()
             {
                 if (!window.SAVED_ELEMENTS[${this.iID}]) {
-                    console.log('[E] fnGetClientPosition - ${this.iID} - empty');
+                    console.log('[E] fnSetStyle - ${this.iID} - empty');
                     return false;
                 }
 
                 if (window.SAVED_ELEMENTS[${this.iID}].parentElement===null) {
-                    console.log('[E] fnGetClientPosition - ${this.iID} - parentElement===null');
+                    console.log('[E] fnSetStyle - ${this.iID} - parentElement===null');
                     return false;
                 }
 
@@ -419,6 +453,11 @@ class AutoRuParser
 
             await oBrandsSelectButtonElement.fnClick()
             await this.fnSleep(500)
+
+            var sBrandMenuXPath = "(//*[contains(@class,\"Select__menu\")])[1]" 
+            var oBrandMenu = await this.fnGetElementXPath(sBrandMenuXPath)
+            
+            console.log('[!] HTML: ', await oBrandMenu.fnGetAttribute("innerHTML"))
     
             //var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])[1]//div[text()=\"Все\"]/following::*[text()=\""+sBrand+"\"]"
             var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])[1]//*[text()=\""+sBrand+"\"]"
@@ -450,18 +489,25 @@ class AutoRuParser
 
             //var sModelsGroupsItemsXPath = "(//*[contains(@class,\"Select__menu\")])[1]//*[contains(@class,\"Menu__group\")][descendant::*[text()=\"Все\"]]//*[contains(@class,\"MenuItemGroup__root\")]/*[contains(@class,\"MenuItem\")][string-length(text()) > 0]"
             var sModelsGroupsItemsXPath = "(//*[contains(@class,\"Select__menu\")])[1]//*[contains(@class,\"Menu__group\")]//*[contains(@class,\"MenuItemGroup__root\")]/*[contains(@class,\"MenuItem\")][string-length(text()) > 0]"
-            var aModelsGroups = await this.fnGetElementsAttributeXPath(sModelsGroupsItemsXPath, 'innerText', 5)
+            var aModelsGroups = await this.fnGetElementsAttributeXPath(sModelsGroupsItemsXPath, 'innerText', 1)
 
             if (!aModelsGroups) {
                 console.log(`[!] models groups - not found`)
             } else {
                 aModelsGroups = aModelsGroups.filter((v) => v != 'Любая')
                 aModelsGroups = aModelsGroups.filter((v, p) => aModelsGroups.indexOf(v) == p )
+
+                console.log(`[!] models groups found: ${aModelsGroups.length}`)
     
                 for (var sModel of aModelsGroups) {
                     //var sModelsGroupsModelItemXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[text()="'+sModel+'"]/following::*[contains(@class,"Button")]'
                     var sModelsGroupsModelButtonXPath = '(//*[contains(@class,"Select__menu")])[1]//*[text()="'+sModel+'"]/*[contains(@class,"Button")]' //following::*[contains(@class,"Button")]'
-                    var oModelsGroupsModelButton = await this.fnGetElementXPath(sModelsGroupsModelButtonXPath)
+                    var oModelsGroupsModelButton = await this.fnGetElementXPath(sModelsGroupsModelButtonXPath, 0, 1)
+
+                    if (!oModelsGroupsModelButton) {
+                        console.log(`[E] models list - oModelsGroupsModelButton - Element not found`)
+                        return
+                    }
 
                     await oModelsGroupsModelButton.fnJavascriptClick()
                     await this.fnSleep(500)
@@ -492,15 +538,25 @@ class AutoRuParser
                             }
 
                             var sModelsGroupsModelButtonXPath = '(//*[contains(@class,"Select__menu")])[1]//*[text()="'+sModel+'"]/*[contains(@class,"Button")]' //following::*[contains(@class,"Button")]'
-                            var oModelsGroupsModelButton = await this.fnGetElementXPath(sModelsGroupsModelButtonXPath)
+                            var oModelsGroupsModelButton = await this.fnGetElementXPath(sModelsGroupsModelButtonXPath, 0, 1)
         
+                            if (!oModelsGroupsModelButton) {
+                                console.log(`[E] models list - oModelsGroupsModelButton - Element not found`)
+                                return;
+                            }
+
                             await oModelsGroupsModelButton.fnJavascriptClick()
                             await this.fnSleep(500)
     
                             //var sSubmodelXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[text()="'+sSubModel+'"]'
                             var sSubmodelXPath = '(//*[contains(@class,"Select__menu")])[1]//*[text()="'+sSubModel+'"]'
-                            var oSubModelItem = await this.fnGetElementXPath(sSubmodelXPath)
+                            var oSubModelItem = await this.fnGetElementXPath(sSubmodelXPath, 0, 1)
     
+                            if (!oSubModelItem) {
+                                console.log(`[E] models list - oSubModelItem - Element not found`)
+                                return;
+                            }
+
                             await oSubModelItem.fnJavascriptClick()
     
                             this.oURLs[sBrand][sModel][sSubModel] = await this.fnGetLocation()
