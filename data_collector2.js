@@ -506,7 +506,6 @@ class AutoRuParser
             
             console.log('[!] HTML: ', await oBrandMenu.fnGetAttribute("innerHTML"))
     
-            //var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])[1]//div[text()=\"Все\"]/following::*[text()=\""+sBrand+"\"]"
             var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])[1]//*[text()=\""+sBrand+"\"]"
 
             var oBrandMenuItem = await this.fnGetElementXPath(sBrandMenuItemXPath)
@@ -535,8 +534,7 @@ class AutoRuParser
             var bHasButtonClass = await this.fnWaitElementCSS(".Select__menu .Button", 0, 1)
 
             // Поиск всех групп моделей(пункты меню с кнопкой)
-            //var sModelsGroupsItemsXPath = "(//*[contains(@class,\"Select__menu\")])[1]//*[contains(@class,\"Menu__group\")][descendant::*[text()=\"Все\"]]//*[contains(@class,\"MenuItemGroup__root\")]/*[contains(@class,\"MenuItem\")][string-length(text()) > 0]"
-            var sModelsGroupsItemsXPath = '(//*[contains(@class,"Select__menu")])[1]//*[contains(@class,"MenuItemGroup")]/*[contains(@class,"MenuItem")][string-length(text()) > 0]'
+            var sModelsGroupsItemsXPath = '(//*[contains(@class,"Select__menu")])[1]//*[contains(@class,"MenuItemGroup")]/*[contains(@class,"MenuItem") and not(contains(@class,"MenuItemGroup"))][string-length(text()) > 0]'
             var aModelsGroups = await this.fnGetElementsAttributeXPath(sModelsGroupsItemsXPath, 'innerText', 1)
 
             if (!aModelsGroups) {
@@ -569,8 +567,7 @@ class AutoRuParser
                     await oModelsSelectButtonElement.fnClick()
                     await this.fnSleep(500)
 
-                    //var sModelsGroupsModelItemXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[text()="'+sModel+'"]/following::*[contains(@class,"Button")]'
-                    var sModelsGroupsModelButtonXPath = '(//*[contains(@class,"Select__menu")])[1]//*[preceding-sibling::*[text()="'+sModel+'"]][contains(@class,"Button")]' //following::*[contains(@class,"Button")]'
+                    var sModelsGroupsModelButtonXPath = '(//*[contains(@class,"Select__menu")])[1]//*[preceding-sibling::*[text()="'+sModel+'"] and contains(@class,"Button")]'
                     var oModelsGroupsModelButton = await this.fnGetElementXPath(sModelsGroupsModelButtonXPath, 0, 1)
 
                     if (!oModelsGroupsModelButton) {
@@ -582,8 +579,7 @@ class AutoRuParser
                     await this.fnSleep(500)
 
                     // Получение списка подмоделей
-                    //var sSubmodelsListXPath = '(//*[contains(@class,"Select__menu")])[1]//*[contains(@class,"Menu__group")][descendant::*[text()="Все"]]//*[contains(@class,"MenuItemGroup__children")]/*[contains(@class,"MenuItem")]'
-                    var sSubmodelsListXPath = '(//*[contains(@class,"Select__menu")])[1]//*[preceding-sibling::*[text()="'+sModel+'"]][contains(@class,"MenuItemGroup")][1]/*[contains(@class,"MenuItem")]'
+                    var sSubmodelsListXPath = '(//*[contains(@class,"Select__menu")])[1]//*[preceding-sibling::*[text()="'+sModel+'"] and contains(@class,"MenuItemGroup")]/*[contains(@class,"MenuItem")]'
                     var aSubmodels = await this.fnGetElementsAttributeXPath(sSubmodelsListXPath, 'innerText', 1)
 
                     this.fnConsoleDir(aSubmodels)
@@ -591,6 +587,12 @@ class AutoRuParser
                     if (!aSubmodels) {
                         console.log(`[!] models groups - ${sModel} - submodels not found`)
                     } else {
+                        try {
+                            aSubmodels.filter(function(v, p) { if (aSubmodels.indexOf(v) != p) throw "!" })
+                        } catch(oException) {
+                            console.log(`[E] [${__line}] submodels list - duplicate submodels`)
+                        }
+
                         for (var sSubModel of aSubmodels) {
                             console.log(`[!] ----------------- Submodel - '${sSubModel}'`)
 
@@ -613,7 +615,7 @@ class AutoRuParser
                             await oModelsSelectButtonElement.fnClick()
                             await this.fnSleep(500)
 
-                            var sModelsGroupsModelButtonXPath = '(//*[contains(@class,"Select__menu")])[1]//*[preceding-sibling::*[text()="'+sModel+'"]][contains(@class,"Button")]' //following::*[contains(@class,"Button")]'
+                            var sModelsGroupsModelButtonXPath = '(//*[contains(@class,"Select__menu")])[1]//*[preceding-sibling::*[text()="'+sModel+'"] and contains(@class,"Button")]'
                             var oModelsGroupsModelButton = await this.fnGetElementXPath(sModelsGroupsModelButtonXPath, 0, 1)
         
                             if (!oModelsGroupsModelButton) {
@@ -624,7 +626,6 @@ class AutoRuParser
                             await oModelsGroupsModelButton.fnJavascriptClick()
                             await this.fnSleep(500)
     
-                            //var sSubmodelXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[text()="'+sSubModel+'"]'
                             var sSubmodelXPath = '(//*[contains(@class,"Select__menu")])[1]//*[text()="'+sSubModel+'"]'
                             var oSubModelItem = await this.fnGetElementXPath(sSubmodelXPath, 0, 1)
     
@@ -662,7 +663,6 @@ class AutoRuParser
             await oModelsSelectButtonElement.fnClick()
             await this.fnSleep(500)
 
-            //var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[contains(@class,"MenuItem")]'
             var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//*[not(parent::*[contains(@class,"MenuItemGroup__root")]) and contains(@class,"MenuItem") and not(contains(@class,"MenuItemGroup")) and string-length(text()) > 0]'
             var aModels = await this.fnGetElementsAttributeXPath(sModelMenuItemXPath, 'innerText', 1)
 
@@ -699,7 +699,6 @@ class AutoRuParser
                         return;
                     }
 
-                    //var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//div[text()="Все"]/following::*[text()="'+sModel+'"]' // [.//*[not(contains(@class,"MenuItemGroup__button"))]]
                     var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//*[text()="'+sModel+'"]' // [.//*[not(contains(@class,"MenuItemGroup__button"))]]
                     var oModelMenuItem = await this.fnGetElementXPath(sModelMenuItemXPath, 0, 1)
 
