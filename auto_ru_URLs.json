@@ -219,7 +219,41 @@
         "CD": "https://auto.ru/moskva/cars/bitter/cd/all/?sort=fresh_relevance_1-desc",
         "Type 3": "https://auto.ru/moskva/cars/bitter/type_3/all/?sort=fresh_relevance_1-desc"
     },
-    "BMW": {},
+    "BMW": {
+        "315": "https://auto.ru/moskva/cars/bmw/315/all/?sort=fresh_relevance_1-desc",
+        "321": "https://auto.ru/moskva/cars/bmw/321/all/?sort=fresh_relevance_1-desc",
+        "326": "https://auto.ru/moskva/cars/bmw/326/all/?sort=fresh_relevance_1-desc",
+        "327": "https://auto.ru/moskva/cars/bmw/327/all/?sort=fresh_relevance_1-desc",
+        "340": "https://auto.ru/moskva/cars/bmw/340/all/?sort=fresh_relevance_1-desc",
+        "501": "https://auto.ru/moskva/cars/bmw/501/all/?sort=fresh_relevance_1-desc",
+        "502": "https://auto.ru/moskva/cars/bmw/502/all/?sort=fresh_relevance_1-desc",
+        "503": "https://auto.ru/moskva/cars/bmw/503/all/?sort=fresh_relevance_1-desc",
+        "507": "https://auto.ru/moskva/cars/bmw/507/all/?sort=fresh_relevance_1-desc",
+        "600": "https://auto.ru/moskva/cars/bmw/600/all/?sort=fresh_relevance_1-desc",
+        "700": "https://auto.ru/moskva/cars/bmw/700/all/?sort=fresh_relevance_1-desc",
+        "3200": "https://auto.ru/moskva/cars/bmw/3200/all/?sort=fresh_relevance_1-desc",
+        "i3": "https://auto.ru/moskva/cars/bmw/i3/all/?sort=fresh_relevance_1-desc",
+        "i8": "https://auto.ru/moskva/cars/bmw/i8/all/?sort=fresh_relevance_1-desc",
+        "M2": "https://auto.ru/moskva/cars/bmw/m2/all/?sort=fresh_relevance_1-desc",
+        "M3": "https://auto.ru/moskva/cars/bmw/m3/all/?sort=fresh_relevance_1-desc",
+        "M4": "https://auto.ru/moskva/cars/bmw/m4/all/?sort=fresh_relevance_1-desc",
+        "M6": "https://auto.ru/moskva/cars/bmw/m6/all/?sort=fresh_relevance_1-desc",
+        "X5 M": "https://auto.ru/moskva/cars/bmw/x5_m/all/?sort=fresh_relevance_1-desc",
+        "X6 M": "https://auto.ru/moskva/cars/bmw/x6_m/all/?sort=fresh_relevance_1-desc",
+        "Z3": "https://auto.ru/moskva/cars/bmw/z3/all/?sort=fresh_relevance_1-desc",
+        "Z4 M": "https://auto.ru/moskva/cars/bmw/z4_m/all/?sort=fresh_relevance_1-desc",
+        "02 (E10)": "https://auto.ru/moskva/cars/bmw/02/all/?sort=fresh_relevance_1-desc",
+        "1M": "https://auto.ru/moskva/cars/bmw/m1/all/?sort=fresh_relevance_1-desc",
+        "2000 C/CS": "https://auto.ru/moskva/cars/bmw/2000_c_cs/all/?sort=fresh_relevance_1-desc",
+        "3/15": "https://auto.ru/moskva/cars/bmw/3_15/all/?sort=fresh_relevance_1-desc",
+        "E3": "https://auto.ru/moskva/cars/bmw/e3/all/?sort=fresh_relevance_1-desc",
+        "E9": "https://auto.ru/moskva/cars/bmw/e9/all/?sort=fresh_relevance_1-desc",
+        "M8": "https://auto.ru/moskva/cars/bmw/m8/all/?sort=fresh_relevance_1-desc",
+        "New Class": "https://auto.ru/moskva/cars/bmw/new_class/all/?sort=fresh_relevance_1-desc",
+        "Z1": "https://auto.ru/moskva/cars/bmw/z1/all/?sort=fresh_relevance_1-desc",
+        "Z3 M": "https://auto.ru/moskva/cars/bmw/z3m/all/?sort=fresh_relevance_1-desc",
+        "Z8": "https://auto.ru/moskva/cars/bmw/z8/all/?sort=fresh_relevance_1-desc"
+    },
     "Borgward": {
         "2000": "https://auto.ru/moskva/cars/borgward/2000/all/?sort=fresh_relevance_1-desc",
         "Hansa 1100": "https://auto.ru/moskva/cars/borgward/hansa_1100/all/?sort=fresh_relevance_1-desc"
@@ -675,7 +709,15 @@
     "DeLorean": {
         "DMC-12": "https://auto.ru/moskva/cars/delorean/dmc_12/all/?sort=fresh_relevance_1-desc"
     },
-    "Derways": {},
+    "Derways": {
+        "Aurora": "https://auto.ru/moskva/cars/derways/aurora/all/?sort=fresh_relevance_1-desc",
+        "Cowboy": "https://auto.ru/moskva/cars/derways/cowboy/all/?sort=fresh_relevance_1-desc",
+        "Shuttle": "https://auto.ru/moskva/cars/derways/shuttle/all/?sort=fresh_relevance_1-desc",
+        "Antelope": "https://auto.ru/moskva/cars/derways/antelope/all/?sort=fresh_relevance_1-desc",
+        "Land Crown": "https://auto.ru/moskva/cars/derways/land_crown/all/?sort=fresh_relevance_1-desc",
+        "Plutus": "https://auto.ru/moskva/cars/derways/plutus/all/?sort=fresh_relevance_1-desc",
+        "Saladin": "https://auto.ru/moskva/cars/derways/saladin/all/?sort=fresh_relevance_1-desc"
+    },
     "DeSoto": {
         "Custom": "https://auto.ru/moskva/cars/desoto/custom/all/?sort=fresh_relevance_1-desc",
         "Firedome": "https://auto.ru/moskva/cars/desoto/firedome/all/?sort=fresh_relevance_1-desc",
@@ -725,7 +767,11 @@
         "A9": "https://auto.ru/moskva/cars/dongfeng/a9/all/?sort=fresh_relevance_1-desc",
         "Oting": "https://auto.ru/moskva/cars/dongfeng/oting/all/?sort=fresh_relevance_1-desc"
     },
-    "Doninvest": {},
+    "Doninvest": {
+        "Assol": "https://auto.ru/moskva/cars/doninvest/assol/all/?sort=fresh_relevance_1-desc",
+        "Kondor": "https://auto.ru/moskva/cars/doninvest/kondor/all/?sort=fresh_relevance_1-desc",
+        "Orion": "https://auto.ru/moskva/cars/doninvest/orion/all/?sort=fresh_relevance_1-desc"
+    },
     "Donkervoort": {
         "D8": "https://auto.ru/moskva/cars/donkervoort/d8/all/?sort=fresh_relevance_1-desc",
         "D8 GTO": "https://auto.ru/moskva/cars/donkervoort/d8_gto/all/?sort=fresh_relevance_1-desc"
@@ -755,7 +801,17 @@
         "Series V": "https://auto.ru/moskva/cars/excalibur/series_v/all/?sort=fresh_relevance_1-desc",
         "Series IV": "https://auto.ru/moskva/cars/excalibur/series_iv/all/?sort=fresh_relevance_1-desc"
     },
-    "FAW": {},
+    "FAW": {
+        "Besturn B50": "https://auto.ru/moskva/cars/faw/besturn_b50/all/?sort=fresh_relevance_1-desc",
+        "Besturn X80": "https://auto.ru/moskva/cars/faw/x80/all/?sort=fresh_relevance_1-desc",
+        "Jinn": "https://auto.ru/moskva/cars/faw/jinn/all/?sort=fresh_relevance_1-desc",
+        "Oley": "https://auto.ru/moskva/cars/faw/oley/all/?sort=fresh_relevance_1-desc",
+        "V2": "https://auto.ru/moskva/cars/faw/v2/all/?sort=fresh_relevance_1-desc",
+        "V5": "https://auto.ru/moskva/cars/faw/v5/all/?sort=fresh_relevance_1-desc",
+        "Vita": "https://auto.ru/moskva/cars/faw/vita/all/?sort=fresh_relevance_1-desc",
+        "Besturn B70": "https://auto.ru/moskva/cars/faw/besturn_b70/all/?sort=fresh_relevance_1-desc",
+        "Besturn X40": "https://auto.ru/moskva/cars/faw/besturn_x40/all/?sort=fresh_relevance_1-desc"
+    },
     "Ferrari": {
         "328": "https://auto.ru/moskva/cars/ferrari/328/all/?sort=fresh_relevance_1-desc",
         "348": "https://auto.ru/moskva/cars/ferrari/348/all/?sort=fresh_relevance_1-desc",
@@ -971,7 +1027,10 @@
         "SC7": "https://auto.ru/moskva/cars/geely/sc7/all/?sort=fresh_relevance_1-desc",
         "TX4": "https://auto.ru/moskva/cars/geely/tx4/all/?sort=fresh_relevance_1-desc"
     },
-    "Genesis": {},
+    "Genesis": {
+        "G70": "https://auto.ru/moskva/cars/genesis/g70/all/?sort=fresh_relevance_1-desc",
+        "G80": "https://auto.ru/moskva/cars/genesis/g80/all/?sort=fresh_relevance_1-desc"
+    },
     "Geo": {
         "Metro": "https://auto.ru/moskva/cars/geo/metro/all/?sort=fresh_relevance_1-desc",
         "Prizm": "https://auto.ru/moskva/cars/geo/prizm/all/?sort=fresh_relevance_1-desc",
@@ -1046,7 +1105,14 @@
     "Hanomag": {
         "Rekord": "https://auto.ru/moskva/cars/hanomag/rekord/all/?sort=fresh_relevance_1-desc"
     },
-    "Haval": {},
+    "Haval": {
+        "F7": "https://auto.ru/moskva/cars/haval/f7/all/?sort=fresh_relevance_1-desc",
+        "H2": "https://auto.ru/moskva/cars/haval/h2/all/?sort=fresh_relevance_1-desc",
+        "H6": "https://auto.ru/moskva/cars/haval/h6/all/?sort=fresh_relevance_1-desc",
+        "H8": "https://auto.ru/moskva/cars/haval/h8/all/?sort=fresh_relevance_1-desc",
+        "H9": "https://auto.ru/moskva/cars/haval/h9/all/?sort=fresh_relevance_1-desc",
+        "H6 Coupe": "https://auto.ru/moskva/cars/haval/h6_coupe/all/?sort=fresh_relevance_1-desc"
+    },
     "Hawtai": {
         "Boliger": "https://auto.ru/moskva/cars/hawtai/boliger/all/?sort=fresh_relevance_1-desc",
         "Laville": "https://auto.ru/moskva/cars/hawtai/laville/all/?sort=fresh_relevance_1-desc",
@@ -1587,7 +1653,10 @@
         "5EXi": "https://auto.ru/moskva/cars/marlin/5exi/all/?sort=fresh_relevance_1-desc",
         "Sportster": "https://auto.ru/moskva/cars/marlin/sportster/all/?sort=fresh_relevance_1-desc"
     },
-    "Marussia": {},
+    "Marussia": {
+        "B1": "https://auto.ru/moskva/cars/marussia/b1/all/?sort=fresh_relevance_1-desc",
+        "B2": "https://auto.ru/moskva/cars/marussia/b2/all/?sort=fresh_relevance_1-desc"
+    },
     "Maruti": {
         "800": "https://auto.ru/moskva/cars/maruti/800/all/?sort=fresh_relevance_1-desc",
         "1000": "https://auto.ru/moskva/cars/maruti/1000/all/?sort=fresh_relevance_1-desc",
@@ -2376,7 +2445,22 @@
         "P6": "https://auto.ru/moskva/cars/rover/p6/all/?sort=fresh_relevance_1-desc",
         "SD1": "https://auto.ru/moskva/cars/rover/sd1/all/?sort=fresh_relevance_1-desc"
     },
-    "Saab": {},
+    "Saab": {
+        "90": "https://auto.ru/moskva/cars/saab/90/all/?sort=fresh_relevance_1-desc",
+        "93": "https://auto.ru/moskva/cars/saab/93/all/?sort=fresh_relevance_1-desc",
+        "95": "https://auto.ru/moskva/cars/saab/95/all/?sort=fresh_relevance_1-desc",
+        "96": "https://auto.ru/moskva/cars/saab/96/all/?sort=fresh_relevance_1-desc",
+        "99": "https://auto.ru/moskva/cars/saab/99/all/?sort=fresh_relevance_1-desc",
+        "600": "https://auto.ru/moskva/cars/saab/600/all/?sort=fresh_relevance_1-desc",
+        "900": "https://auto.ru/moskva/cars/saab/900/all/?sort=fresh_relevance_1-desc",
+        "9000": "https://auto.ru/moskva/cars/saab/9000/all/?sort=fresh_relevance_1-desc",
+        "9-3": "https://auto.ru/moskva/cars/saab/9_3/all/?sort=fresh_relevance_1-desc",
+        "9-5": "https://auto.ru/moskva/cars/saab/9_5/all/?sort=fresh_relevance_1-desc",
+        "9-2X": "https://auto.ru/moskva/cars/saab/9_2x/all/?sort=fresh_relevance_1-desc",
+        "9-4X": "https://auto.ru/moskva/cars/saab/9_4x/all/?sort=fresh_relevance_1-desc",
+        "9-7X": "https://auto.ru/moskva/cars/saab/9_7x/all/?sort=fresh_relevance_1-desc",
+        "Sonett": "https://auto.ru/moskva/cars/saab/sonett/all/?sort=fresh_relevance_1-desc"
+    },
     "Saipa": {
         "Saina": "https://auto.ru/moskva/cars/saipa/saina/all/?sort=fresh_relevance_1-desc",
         "Tiba": "https://auto.ru/moskva/cars/saipa/tiba/all/?sort=fresh_relevance_1-desc"
