@@ -452,6 +452,7 @@ class AutoRuParser
     async fnGetLocation()
     {
         var sResult = await this.oWindow.webContents.executeJavaScript(`window.location.toString()`)
+        console.log(`[~] Get location - window.location - '${sResult}'`)
         
         return sResult
     }
@@ -608,13 +609,13 @@ class AutoRuParser
                     await this.fnSleep(500)
 
                     // Получение списка подмоделей
-                    var sSubmodelsListXPath = '(//*[contains(@class,"Select__menu")])[1]//*[preceding-sibling::*[text()="'+sModel+'"] and contains(@class,"MenuItemGroup")]/*[contains(@class,"MenuItem")]'
+                    var sSubmodelsListXPath = '(//*[contains(@class,"Select__menu")])[1]//*[descendant::*[text()="'+sModel+'"] and contains(@class,"MenuItemGroup")]/*[contains(@class,"MenuItem") and not(contains(@class,"MenuItemGroup"))]'
                     var aSubmodels = await this.fnGetElementsAttributeXPath(sSubmodelsListXPath, 'innerText', 1)
 
                     this.fnConsoleDir(aSubmodels)
 
                     if (!aSubmodels) {
-                        console.log(`[!] models groups - ${sModel} - submodels not found`)
+                        throw new Error(`[${__line}] models groups - ${sModel} - submodels not found`)
                     } else {
                         try {
                             aSubmodels.filter(function(v, p) { if (aSubmodels.indexOf(v) != p) throw new Error(`[${__line}] dublicates detected in aSubmodels`) })
