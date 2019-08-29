@@ -204,7 +204,6 @@ class DOMElement
                 }
 
                 simulateMouseClick(window.SAVED_ELEMENTS[${this.iID}]);
-                //window.SAVED_ELEMENTS[${this.iID}].click();
 
                 return true;
             })()
@@ -288,7 +287,7 @@ class AutoRuParser
             `)
 
             if (aResult) {
-                console.log(`[+] fnGetElementsAttributeXPath '${sXPath}' ${iWaitTime}s - ${aResult.length}`);
+                console.log(`[+] fnGetElementsAttributeXPath '${sXPath}' ${iWaitTime}s - Found ${aResult.length}`);
                 return aResult;    
             }
         }
@@ -321,7 +320,15 @@ class AutoRuParser
                         if (!window.SAVED_ELEMENTS) {
                             window.SAVED_ELEMENTS = [];
                         }
-                        window.SAVED_ELEMENTS.push(oXPathResult.snapshotItem(${iElementIndex}));
+
+                        var oElement = oXPathResult.snapshotItem(${iElementIndex});
+                        
+                        if (!oElement) {
+                            return -1;
+                        }
+
+                        window.SAVED_ELEMENTS.push(oElement);
+
                         return window.SAVED_ELEMENTS.length-1;
                     }
                     return -1;
@@ -359,7 +366,7 @@ class AutoRuParser
             `)
 
             if (iResult) {
-                console.log(`[+] fnWaitElementXPath '${sXPath}' ${iWaitTime}s - Found ${iResult} elements`);
+                console.log(`[+] fnWaitElementXPath '${sXPath}' ${iWaitTime}s - Found ${iResult}`);
                 return true;    
             }
         }
@@ -609,7 +616,7 @@ class AutoRuParser
                     await this.fnSleep(500)
 
                     // Получение списка подмоделей
-                    var sSubmodelsListXPath = '(//*[contains(@class,"Select__menu")])[1]//*[descendant::*[text()="'+sModel+'"] and contains(@class,"MenuItemGroup")]/*[contains(@class,"MenuItem") and not(contains(@class,"MenuItemGroup"))]'
+                    var sSubmodelsListXPath = '(//*[contains(@class,"Select__menu")])[1]//*[descendant::*[text()="'+sModel+'"] and contains(@class,"MenuItemGroup")]//*[contains(@class,"MenuItemGroup__children")]//*[contains(@class,"MenuItem") and not(contains(@class,"MenuItemGroup"))]'
                     var aSubmodels = await this.fnGetElementsAttributeXPath(sSubmodelsListXPath, 'innerText', 1)
 
                     this.fnConsoleDir(aSubmodels)
