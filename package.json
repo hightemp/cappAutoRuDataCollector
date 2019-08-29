@@ -2,7 +2,7 @@
   "name": "capp_auto_ru_data_collector",
   "version": "1.0.0",
   "description": "",
-  "main": "data_collector2.js",
+  "main": "data_collector.js",
   "dependencies": {
     "electron": "^6.0.3"
   },

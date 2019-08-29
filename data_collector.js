@@ -231,6 +231,8 @@ class AutoRuParser
             await this.fnLoadURLs()
             await this.fnParse()
             await this.fnSaveURLs()
+
+            this.fnGenerateSQLFile()
         } catch(oException) {
             console.log(`[E] ${oException.message}`)
         }
@@ -255,6 +257,46 @@ class AutoRuParser
             JSON.stringify(this.oURLs, null, 4)
         )
         console.log(`[+] URLs saved to '${sFileName}'`);
+    }
+
+    fnGenerateSQLFile(sFileName ="auto_ru.sql")
+    {
+        console.log(`[!] Generating SQL file '${sFileName}'`);
+
+        var sSQLFileContents = ""
+
+        sSQLFileContents += `TRUNCATE TABLE \`lst_car_models__auto_ru\`;\n`;
+        sSQLFileContents += `TRUNCATE TABLE \`lst_car_models_references__auto_ru\`;\n`;
+
+        for (var sBrand in this.oURLs) {
+            sBrand = sBrand.replace(/'/, "\\'");
+
+            for (var sModel in this.oURLs[sBrand]) {
+                if (sModel=='') {
+                    console.log(`[!!] fnGenerateSQLFile - empty model in brand '${sBrand}'`);
+                    continue;
+                }
+
+                sModel = sModel.replace(/'/, "\\'");
+
+                if (typeof this.oURLs[sBrand][sModel] == "object") {
+                    for (var sSubModel in this.oURLs[sBrand][sModel]) {
+                        sSubModel = sSubModel.replace(/'/, "\\'");
+
+                        sSQLFileContents += `INSERT INTO \`lst_car_models__auto_ru\` SET brand='${sBrand}', model='${sModel} ${sSubModel}', url='${this.oURLs[sBrand][sModel][sSubModel]}';\n`;
+                    }
+                } else {
+                    sSQLFileContents += `INSERT INTO \`lst_car_models__auto_ru\` SET brand='${sBrand}', model='${sModel}', url='${this.oURLs[sBrand][sModel]}';\n`;
+                }
+            }
+        }
+
+        fs.writeFileSync(
+            sFileName, 
+            sSQLFileContents
+        )
+
+        console.log(`[+] SQL saved to '${sFileName}'`);
     }
 
     async fnGetElementsAttributeXPath(sXPath, aAttributeName, iWaitTime = this.iWaitTime)
