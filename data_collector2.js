@@ -299,6 +299,8 @@ class AutoRuParser
 
     async fnGetElementXPath(sXPath, iElementIndex=0, iWaitTime = this.iWaitTime)
     {
+        sXPath = sXPath.replace(/'/, "\\'");
+
         console.log(`[!] fnGetElementXPath '${sXPath}' ${iWaitTime}s`);
 
         var iStartTime = Math.round(new Date().getTime()/1000);
@@ -338,6 +340,8 @@ class AutoRuParser
 
     async fnWaitElementXPath(sXPath, iWaitTime = this.iWaitTime)
     {
+        sXPath = sXPath.replace(/'/, "\\'");
+
         console.log(`[!] fnWaitElementXPath '${sXPath}' ${iWaitTime}s`);
 
         var iStartTime = Math.round(new Date().getTime()/1000);
@@ -366,6 +370,8 @@ class AutoRuParser
 
     async fnGetElementCSS(sCSS, iElementIndex=0, iWaitTime = this.iWaitTime)
     {
+        sCSS = sCSS.replace(/'/, "\\'");
+
         console.log(`[!] fnGetElementCSS '${sCSS}' ${iElementIndex} ${iWaitTime}s`);
 
         var iStartTime = Math.round(new Date().getTime()/1000);
@@ -408,6 +414,8 @@ class AutoRuParser
 
     async fnWaitElementCSS(sCSS, iElementIndex=-1, iWaitTime = this.iWaitTime)
     {
+        sCSS = sCSS.replace(/'/, "\\'");
+
         console.log(`[!] fnWaitElementCSS '${sCSS}' ${iWaitTime}s`);
 
         var iStartTime = Math.round(new Date().getTime()/1000);
@@ -456,6 +464,18 @@ class AutoRuParser
         })
     }
 
+    async fnConsoleLogElementInnerHTMLWithCss(sCSS, iElementIndex=-1, iWaitTime = this.iWaitTime)
+    {
+        var oElement = await this.fnGetElementCSS(sCSS, iElementIndex, iWaitTime)
+
+        if (oElement) {
+            console.log(`[>] fnConsoleLogElementInnerHTMLWithCss - '${sCSS}' - `);
+            this.fnConsoleDir(oElement.fnGetAttribute('innerHTML', true))
+        } else {
+            console.log(`[E] fnConsoleLogElementInnerHTMLWithCss - '${sCSS}' - Element not found`);
+        }
+    }
+
     async fnParse()
     {
         console.log('START PARSING');
@@ -476,7 +496,7 @@ class AutoRuParser
             return;
         }
 
-        await oBrandsSelectButtonElement.fnClick()
+        await oBrandsSelectButtonElement.fnJavascriptClick()
         await this.fnSleep(500)
 
         // Получение списка с марками(брендами)
@@ -488,7 +508,7 @@ class AutoRuParser
 
             this.oURLs[sBrand] = {}
 
-            await oBodyElement.fnClick()
+            await oBodyElement.fnJavascriptClick()
             await this.fnSleep(500)
 
             var oBrandsSelectButtonElement = await this.fnGetElementCSS(".Select__button")
@@ -498,13 +518,13 @@ class AutoRuParser
                 return;
             }
 
-            await oBrandsSelectButtonElement.fnClick()
+            await oBrandsSelectButtonElement.fnJavascriptClick()
             await this.fnSleep(500)
 
             var sBrandMenuXPath = "(//*[contains(@class,\"Select__menu\")])[1]" 
             var oBrandMenu = await this.fnGetElementXPath(sBrandMenuXPath)
             
-            console.log('[!] HTML: ', await oBrandMenu.fnGetAttribute("innerHTML"))
+            //console.log('[!] HTML: ', await oBrandMenu.fnGetAttribute("innerHTML"))
     
             var sBrandMenuItemXPath = "(//*[contains(@class,\"Select__menu\")])[1]//*[text()=\""+sBrand+"\"]"
 
@@ -516,6 +536,7 @@ class AutoRuParser
             }
 
             oBrandMenuItem.fnJavascriptClick()
+            await this.fnSleep(500)
 
             // Получение групп моделей
             console.log('[!] -----------------  Getting models groups ----------------- ')
@@ -528,18 +549,19 @@ class AutoRuParser
 
             await oModelsSelectButtonElement.fnSetStyle("border: 1px solid green")
 
-            await oModelsSelectButtonElement.fnClick()
+            await oModelsSelectButtonElement.fnJavascriptClick()
             await this.fnSleep(500)
 
-            var bHasButtonClass = await this.fnWaitElementCSS(".Select__menu .Button", 0, 1)
+            var bHasMenuItemGroupRootClass = await this.fnWaitElementCSS(".Select__menu .MenuItemGroup_root", 0, 1)
+            console.log(`[!] bHasMenuItemGroupRootClass - ${bHasMenuItemGroupRootClass}`)
 
             // Поиск всех групп моделей(пункты меню с кнопкой)
             var sModelsGroupsItemsXPath = '(//*[contains(@class,"Select__menu")])[1]//*[contains(@class,"MenuItemGroup")]/*[contains(@class,"MenuItem") and not(contains(@class,"MenuItemGroup"))][string-length(text()) > 0]'
             var aModelsGroups = await this.fnGetElementsAttributeXPath(sModelsGroupsItemsXPath, 'innerText', 1)
 
             if (!aModelsGroups) {
-                if (!bHasButtonClass) {
-                    console.log(`[E] [${__line}] models groups - not found - bHasButtonClass`)
+                if (bHasMenuItemGroupRootClass) {
+                    console.log(`[E] [${__line}] models groups - not found - bHasMenuItemGroupRootClass`)
                     return
                 }
                 console.log(`[!] models groups - not found`)
@@ -552,7 +574,7 @@ class AutoRuParser
                 for (var sModel of aModelsGroups) {
                     console.log(`[!] ----------------- Group model - ${sModel}`)
 
-                    await oBodyElement.fnClick()
+                    await oBodyElement.fnJavascriptClick()
                     await this.fnSleep(500)
 
                     var oModelsSelectButtonElement = await this.fnGetElementCSS(".Select__button", 1)
@@ -564,7 +586,7 @@ class AutoRuParser
 
                     await oModelsSelectButtonElement.fnSetStyle("border: 1px solid green")
 
-                    await oModelsSelectButtonElement.fnClick()
+                    await oModelsSelectButtonElement.fnJavascriptClick()
                     await this.fnSleep(500)
 
                     var sModelsGroupsModelButtonXPath = '(//*[contains(@class,"Select__menu")])[1]//*[preceding-sibling::*[text()="'+sModel+'"] and contains(@class,"Button")]'
@@ -600,7 +622,7 @@ class AutoRuParser
                                 continue
                             }
 
-                            await oBodyElement.fnClick()
+                            await oBodyElement.fnJavascriptClick()
                             await this.fnSleep(500)
     
                             var oModelsSelectButtonElement = await this.fnGetElementCSS(".Select__button", 1)
@@ -612,7 +634,7 @@ class AutoRuParser
 
                             await oModelsSelectButtonElement.fnSetStyle("border: 1px solid orange")
     
-                            await oModelsSelectButtonElement.fnClick()
+                            await oModelsSelectButtonElement.fnJavascriptClick()
                             await this.fnSleep(500)
 
                             var sModelsGroupsModelButtonXPath = '(//*[contains(@class,"Select__menu")])[1]//*[preceding-sibling::*[text()="'+sModel+'"] and contains(@class,"Button")]'
@@ -635,6 +657,7 @@ class AutoRuParser
                             }
 
                             await oSubModelItem.fnJavascriptClick()
+                            await this.fnSleep(500)
     
                             if (!this.oURLs[sBrand][sModel]) {
                                 this.oURLs[sBrand][sModel] = {}
@@ -646,7 +669,7 @@ class AutoRuParser
             }
             console.log('[!] -----------------  END: Getting models groups ----------------- ')
 
-            await oBodyElement.fnClick()
+            await oBodyElement.fnJavascriptClick()
             await this.fnSleep(500)
 
             // Получение моделей
@@ -660,7 +683,7 @@ class AutoRuParser
 
             await oModelsSelectButtonElement.fnSetStyle("border: 1px solid black")
 
-            await oModelsSelectButtonElement.fnClick()
+            await oModelsSelectButtonElement.fnJavascriptClick()
             await this.fnSleep(500)
 
             var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//*[not(parent::*[contains(@class,"MenuItemGroup__root")]) and contains(@class,"MenuItem") and not(contains(@class,"MenuItemGroup")) and string-length(text()) > 0]'
@@ -679,7 +702,7 @@ class AutoRuParser
                         continue
                     }
 
-                    await oBodyElement.fnClick()
+                    await oBodyElement.fnJavascriptClick()
                     await this.fnSleep(500)
 
                     oModelsSelectButtonElement = await this.fnGetElementCSS(".Select__button", 1)
@@ -691,7 +714,7 @@ class AutoRuParser
 
                     await oModelsSelectButtonElement.fnSetStyle("border: 1px solid red")
 
-                    await oModelsSelectButtonElement.fnClick()
+                    await oModelsSelectButtonElement.fnJavascriptClick()
                     await this.fnSleep(500)
 
                     if (!await this.fnWaitElementCSS(".Select__menu", -1, 1)) {
@@ -708,6 +731,7 @@ class AutoRuParser
                     }
 
                     await oModelMenuItem.fnJavascriptClick()
+                    await this.fnSleep(500)
 
                     this.oURLs[sBrand][sModel] = await this.fnGetLocation()
                 }
