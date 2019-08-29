@@ -717,7 +717,7 @@ class AutoRuParser
             await oModelsSelectButtonElement.fnJavascriptClick()
             await this.fnSleep(500)
 
-            var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//*[not(parent::*[contains(@class,"MenuItemGroup__root")]) and contains(@class,"MenuItem") and not(contains(@class,"MenuItemGroup")) and string-length(text()) > 0]'
+            var sModelMenuItemXPath = '(//*[contains(@class,"Select__menu")])[1]//*[not(parent::*[contains(@class,"MenuItemGroup__root")]) and not(parent::*[contains(@class,"MenuItemGroup__children")]) and contains(@class,"MenuItem") and not(contains(@class,"MenuItemGroup")) and string-length(text()) > 0]'
             var aModels = await this.fnGetElementsAttributeXPath(sModelMenuItemXPath, 'innerText', 1)
 
             if (aModels) {
