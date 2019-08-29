@@ -8,7 +8,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "electron data_collector2.js"
+    "start": "electron data_collector.js"
   },
   "author": "",
   "license": "ISC"
