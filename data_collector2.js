@@ -226,6 +226,8 @@ class AutoRuParser
     async fnStart()
     {
         try {
+            await this.oWindow.setIgnoreMouseEvents(true, { forward: false })
+
             await this.fnLoadURLs()
             await this.fnParse()
             await this.fnSaveURLs()
@@ -484,6 +486,35 @@ class AutoRuParser
         }
     }
 
+    async fnClickElementUntilCssExists(sElementCss, iElementIndex, sUntilCss, iUntilElementIndex, iTimes=10)
+    {
+        while (!await this.fnWaitElementCSS(sUntilCss, iUntilElementIndex, 1) && iTimes) {
+            console.log(`[!] fnClickElementUntilCssExists - '${sUntilCss}' - ${iTimes}`)
+            var oElement = await this.fnGetElementCSS(sElementCss, iElementIndex)
+            await oElement.fnJavascriptClick()
+            await this.fnSleep(500)
+            --iTimes;
+        }
+
+        if (!await this.fnWaitElementCSS(sUntilCss, iUntilElementIndex, 1)) {
+            throw new Error(`[${__line}] fnClickElementUntilCssExists - '${sUntilCss}' - Element not found`)
+        }
+    }
+
+    async fnClickDOMElementUntilXPathExists(oDOMElement, sUntilXPath, iTimes=10)
+    {
+        while (!await this.fnWaitElementXPath(sUntilXPath, 1) && iTimes) {
+            console.log(`[!] fnClickDOMElementUntilXPathExists - '${sUntilXPath}' - ${iTimes}`)
+            await oDOMElement.fnJavascriptClick()
+            await this.fnSleep(500)
+            --iTimes
+        }
+
+        if (!await this.fnWaitElementXPath(sUntilXPath, 1)) {
+            throw new Error(`[${__line}] fnClickElementUntilCssExists - '${sUntilXPath}' - Element not found`)
+        }
+    }
+
     async fnParse()
     {
         console.log('START PARSING');
@@ -555,20 +586,7 @@ class AutoRuParser
 
             await oModelsSelectButtonElement.fnSetStyle("border: 1px solid green")
 
-            await oModelsSelectButtonElement.fnJavascriptClick()
-            await this.fnSleep(500)
-
-            var iTimes = 10
-            while (!await this.fnWaitElementCSS(".Select__menu", 0, 1) && iTimes) {
-                oModelsSelectButtonElement = await this.fnGetElementCSS(".Select__button", 1)
-                await oModelsSelectButtonElement.fnJavascriptClick()
-                await this.fnSleep(500)
-                --iTimes;
-            }
-
-            if (!await this.fnWaitElementCSS(".Select__menu", 0, 1)) {
-                throw new Error(`[${__line}] .Select__menu - Models menu not open`)
-            }
+            await this.fnClickElementUntilCssExists(".Select__button", 1, ".Select__menu", 0)
 
             var bHasMenuItemGroupRootClass = await this.fnWaitElementCSS(".Select__menu .MenuItemGroup_root", 0, 1)
             console.log(`[!] bHasMenuItemGroupRootClass - ${bHasMenuItemGroupRootClass}`)
@@ -627,8 +645,11 @@ class AutoRuParser
                         try {
                             aSubmodels.filter(function(v, p) { if (aSubmodels.indexOf(v) != p) throw new Error(`[${__line}] dublicates detected in aSubmodels`) })
                         } catch(oException) {
-                            throw new Error(`[${__line}] submodels list - duplicate submodels`)
+                            //throw new Error(`[${__line}] submodels list - duplicate submodels`)
+                            console.log("[!!] submodels list - duplicate submodels")
                         }
+
+                        aSubmodels = aSubmodels.filter((v, p) => aSubmodels.indexOf(v) == p )
 
                         for (var sSubModel of aSubmodels) {
                             console.log(`[!] ----------------- Submodel - '${sSubModel}'`)
@@ -658,8 +679,7 @@ class AutoRuParser
                                 throw new Error(`[${__line}] models list - oModelsGroupsModelButton - Element not found`)
                             }
 
-                            await oModelsGroupsModelButton.fnJavascriptClick()
-                            await this.fnSleep(500)
+                            await this.fnClickDOMElementUntilXPathExists(oModelsGroupsModelButton, '(//*[contains(@class,"Select__menu")])[1]//*[text()="'+sSubModel+'"]')
     
                             var sSubmodelXPath = '(//*[contains(@class,"Select__menu")])[1]//*[text()="'+sSubModel+'"]'
                             var oSubModelItem = await this.fnGetElementXPath(sSubmodelXPath, 0, 1)
