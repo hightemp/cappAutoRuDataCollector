@@ -225,12 +225,17 @@ class AutoRuParser
 
     async fnStart()
     {
+        var bOnlySQL = process.argv.indexOf('--sql')!=-1
+        
         try {
-            await this.oWindow.setIgnoreMouseEvents(true, { forward: false })
-
             await this.fnLoadURLs()
-            await this.fnParse()
-            await this.fnSaveURLs()
+
+            if (!bOnlySQL) {
+                await this.oWindow.setIgnoreMouseEvents(true, { forward: false })
+
+                await this.fnParse()
+                await this.fnSaveURLs()
+            }
 
             this.fnGenerateSQLFile()
         } catch(oException) {
@@ -238,7 +243,7 @@ class AutoRuParser
             await this.oWindow.setIgnoreMouseEvents(false)
             return
         }
-        
+
         shell.beep()
         shell.beep()
         shell.beep()
@@ -277,7 +282,7 @@ class AutoRuParser
         sSQLFileContents += `TRUNCATE TABLE \`lst_car_models_references__auto_ru\`;\n`;
 
         for (var sBrand in this.oURLs) {
-            sBrand = sBrand.replace(/'/, "\\'");
+            var sEscapedBrand = sBrand //.replace(/'/, "\\'");
 
             for (var sModel in this.oURLs[sBrand]) {
                 if (sModel=='') {
@@ -285,16 +290,16 @@ class AutoRuParser
                     continue;
                 }
 
-                sModel = sModel.replace(/'/, "\\'");
+                var sEscapedModel = sModel //.replace(/'/, "\\'");
 
                 if (typeof this.oURLs[sBrand][sModel] == "object") {
                     for (var sSubModel in this.oURLs[sBrand][sModel]) {
-                        sSubModel = sSubModel.replace(/'/, "\\'");
+                        var sEscapedSubModel = sSubModel //.replace(/'/, "\\'");
 
-                        sSQLFileContents += `INSERT INTO \`lst_car_models__auto_ru\` SET brand='${sBrand}', model='${sModel} ${sSubModel}', url='${this.oURLs[sBrand][sModel][sSubModel]}';\n`;
+                        sSQLFileContents += `INSERT INTO \`lst_car_models__auto_ru\` SET brand="${sEscapedBrand}", model="${sEscapedModel} ${sEscapedSubModel}", url="${this.oURLs[sBrand][sModel][sSubModel]}";\n`;
                     }
                 } else {
-                    sSQLFileContents += `INSERT INTO \`lst_car_models__auto_ru\` SET brand='${sBrand}', model='${sModel}', url='${this.oURLs[sBrand][sModel]}';\n`;
+                    sSQLFileContents += `INSERT INTO \`lst_car_models__auto_ru\` SET brand="${sEscapedBrand}", model="${sEscapedModel}", url="${this.oURLs[sBrand][sModel]}";\n`;
                 }
             }
         }
