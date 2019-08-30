@@ -1,5 +1,5 @@
 
-const { app, BrowserWindow, dialog } = require('electron')
+const { app, BrowserWindow, dialog, shell } = require('electron')
 const fs = require('fs')
 
 Object.defineProperty(global, '__stack', {
@@ -235,7 +235,15 @@ class AutoRuParser
             this.fnGenerateSQLFile()
         } catch(oException) {
             console.log(`[E] ${oException.message}`)
+            await this.oWindow.setIgnoreMouseEvents(false)
+            return
         }
+        
+        shell.beep()
+        shell.beep()
+        shell.beep()
+
+        await this.oWindow.close()
     }
 
     fnLoadURLs(sFileName = this.sSavedURLsFileName)
